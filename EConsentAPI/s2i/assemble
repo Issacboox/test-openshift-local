@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+# สร้างแอปพลิเคชัน
+dotnet restore
+dotnet publish -c Release -o /tmp/artifacts
+
+# คัดลอก artifacts ไปยังที่เหมาะสม
+cp -r /tmp/artifacts/* /deployments/

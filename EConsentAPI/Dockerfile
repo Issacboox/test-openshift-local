@@ -4,10 +4,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["EConsentAPI/EConsentAPI.csproj", "EConsentAPI/"]
-RUN dotnet restore "EConsentAPI/EConsentAPI.csproj"
+COPY ["EConsentAPI/EConsentAPI.csproj", "./"]
+RUN dotnet restore "EConsentAPI.csproj"
 COPY . .
-WORKDIR "/src/EConsentAPI"
+WORKDIR "/src/"
 RUN dotnet build "EConsentAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish

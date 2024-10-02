@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: dotnet-webapi-pipeline-run
+spec:
+  pipelineRef:
+    name: dotnet-webapi-pipeline
+  workspaces:
+    - name: shared-data
+      persistentVolumeClaim:
+        claimName: my-pvc
+  serviceAccountName: pipeline

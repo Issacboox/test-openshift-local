@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-dotnet-webapi
+spec:
+  steps:
+    - name: build-image
+      image: docker
+      script: |
+        docker build -t $(params.image-url) .
+    - name: push-image
+      image: docker
+      script: |
+        docker push $(params.image-url)
+  params:
+    - name: image-url
+      description: The URL of the image to push to
+      type: string
+
