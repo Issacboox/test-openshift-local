@@ -1,0 +1,6 @@
+@EConsentAPI_HostAddress = http://localhost:5090
+
+GET {{EConsentAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
