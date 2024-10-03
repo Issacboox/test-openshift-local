@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"tekton.dev/v1beta1","kind":"Pipeline","metadata":{"annotations":{},"creationTimestamp":"2024-06-28T10:09:12Z","generation":1,"managedFields":[{"apiVersion":"tekton.dev/v1beta1","fieldsType":"FieldsV1","fieldsV1":{"f:spec":{".":{},"f:finally":{},"f:params":{},"f:tasks":{},"f:workspaces":{}}},"manager":"kubectl","operation":"Apply","time":"2024-06-28T10:09:12Z"}],"name":"econsent-api-pipeline","namespace":"tekton-pipeline","resourceVersion":"292310097","uid":"63b22912-e5e1-436b-954d-9f42b83a5d23"},"spec":{"params":[{"default":"https://github.com/Issacboox/test-openshift-local","name":"GIT_REPO","type":"string"},{"default":"main","name":"GIT_REVISION","type":"string"},{"default":"docker.io/maruko3","name":"IMAGE_REGISTRY_URL","type":"string"},{"default":"test-open-shift","name":"APP_NAME","type":"string"}],"tasks":[{"name":"git-clone","params":[{"name":"url","value":"$(params.GIT_REPO)"},{"name":"revision","value":"$(params.GIT_REVISION)"}],"taskRef":{"kind":"ClusterTask","name":"git-clone"}},{"name":"s2i-dotnet","params":[{"name":"IMAGE","value":"$(params.IMAGE_REGISTRY_URL)/$(params.APP_NAME):$(params.GIT_REVISION)"},{"name":"VERSION","value":"8.0"}],"taskRef":{"kind":"ClusterTask","name":"s2i-dotnet"}},{"name":"deploy-app","params":[{"name":"SCRIPT","value":"oc new-app --image-stream=$(params.APP_NAME):$(params.GIT_REVISION) --name=$(params.APP_NAME)\nsleep 5\noc set triggers deployment/$(params.APP_NAME) --manual\noc set probe deployment $(params.APP_NAME) --readiness --open-tcp=8080 --initial-delay-seconds=60\noc set probe deployment $(params.APP_NAME) --liveness --open-tcp=8080 --initial-delay-seconds=90\noc rollout resume deployment/$(params.APP_NAME)\n"}],"taskRef":{"kind":"ClusterTask","name":"openshift-client"}}]}}
+  creationTimestamp: "2024-10-03T08:29:36Z"
+  generation: 1
+  name: econsent-api-pipeline
+  namespace: tekton-pipeline
+  resourceVersion: "113527"
+  uid: ad5d3ba5-11b8-4ddb-a8da-af3b30535282
+spec:
+  params:
+  - default: https://github.com/Issacboox/test-openshift-local
+    name: GIT_REPO
+    type: string
+  - default: main
+    name: GIT_REVISION
+    type: string
+  - default: docker.io/maruko3
+    name: IMAGE_REGISTRY_URL
+    type: string
+  - default: test-open-shift
+    name: APP_NAME
+    type: string
+  tasks:
+  - name: git-clone
+    params:
+    - name: url
+      value: $(params.GIT_REPO)
+    - name: revision
+      value: $(params.GIT_REVISION)
+    taskRef:
+      kind: ClusterTask
+      name: git-clone
+  - name: s2i-dotnet
+    params:
+    - name: IMAGE
+      value: $(params.IMAGE_REGISTRY_URL)/$(params.APP_NAME):$(params.GIT_REVISION)
+    - name: VERSION
+      value: "8.0"
+    taskRef:
+      kind: ClusterTask
+      name: s2i-dotnet
+  - name: deploy-app
+    params:
+    - name: SCRIPT
+      value: |
+        oc new-app --image-stream=$(params.APP_NAME):$(params.GIT_REVISION) --name=$(params.APP_NAME)
+        sleep 5
+        oc set triggers deployment/$(params.APP_NAME) --manual
+        oc set probe deployment $(params.APP_NAME) --readiness --open-tcp=8080 --initial-delay-seconds=60
+        oc set probe deployment $(params.APP_NAME) --liveness --open-tcp=8080 --initial-delay-seconds=90
+        oc rollout resume deployment/$(params.APP_NAME)
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
