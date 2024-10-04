@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildah
+spec:
+  params:
+    - name: IMAGE
+      type: string
+      description: The name of the image to build
+  steps:
+    - name: build-image
+      image: image-registry.openshift-image-registry.svc:5000/tekton-pipelines/buildah:latest
+      script: |
+        #!/usr/bin/env sh
+        set -e
+        buildah bud -t $(params.IMAGE) .
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-clone
+spec:
+  params:
+    - name: url
+      type: string
+      description: The URL of the git repository
+    - name: revision
+      type: string
+      description: The revision to check out
+  steps:
+    - name: clone
+      image: alpine/git
+      workingDir: /workspace/repo  # specify the workspace directory
+      script: |
+        #!/bin/sh
+        git clone $(params.url) .
+        git checkout $(params.revision)

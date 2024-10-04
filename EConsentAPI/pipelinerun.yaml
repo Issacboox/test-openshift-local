@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: econsent-api-run
+spec:
+  pipelineRef:
+    name: econsent-api
+  params:
+    - name: GIT_REPO
+      value: https://github.com/Issacboox/test-openshift-local
+    - name: GIT_REVISION
+      value: main
+    - name: IMAGE_REGISTRY_URL
+      value: image-registry.openshift-image-registry.svc:5000/tekton-pipelines
+    - name: APP_NAME
+      value: test-open-shift

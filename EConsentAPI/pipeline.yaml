@@ -1,51 +1,29 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: econsent-api-pipeline
-  namespace: test-ja-eiei
+  name: econsent-api
 spec:
   params:
     - name: GIT_REPO
       type: string
-      default: 'https://github.com/Issacboox/test-openshift-local'
     - name: GIT_REVISION
       type: string
-      default: 'main'
     - name: IMAGE_REGISTRY_URL
       type: string
-      default: 'docker.io/maruko3'
     - name: APP_NAME
       type: string
-      default: 'test-open-shift'
   tasks:
     - name: git-clone
       taskRef:
-        kind: ClusterTask
         name: git-clone
       params:
         - name: url
           value: $(params.GIT_REPO)
         - name: revision
           value: $(params.GIT_REVISION)
-    - name: s2i-dotnet
+    - name: build-and-push-image
       taskRef:
-        kind: ClusterTask
-        name: s2i-dotnet
+        name: buildah
       params:
         - name: IMAGE
           value: $(params.IMAGE_REGISTRY_URL)/$(params.APP_NAME):$(params.GIT_REVISION)
-        - name: VERSION
-          value: '8.0'
-    - name: deploy-app
-      taskRef:
-        kind: ClusterTask
-        name: openshift-client
-      params:
-        - name: SCRIPT
-          value: |
-            oc new-app --image-stream=$(params.APP_NAME):$(params.GIT_REVISION) --name=$(params.APP_NAME)
-            sleep 5
-            oc set triggers deployment/$(params.APP_NAME) --manual
-            oc set probe deployment $(params.APP_NAME) --readiness --open-tcp=8080 --initial-delay-seconds=60
-            oc set probe deployment $(params.APP_NAME) --liveness --open-tcp=8080 --initial-delay-seconds=90
-            oc rollout resume deployment/$(params.APP_NAME)

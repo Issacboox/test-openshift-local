@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EConsentAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89f08254e5d33d6950dbd0aea0bd7daff3db850a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+38b259c4510ede63340749ea96c1c209af072c64")]
 [assembly: System.Reflection.AssemblyProductAttribute("EConsentAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EConsentAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
