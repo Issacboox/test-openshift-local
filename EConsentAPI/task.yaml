@@ -10,10 +10,19 @@ spec:
   steps:
     - name: build-image
       image: image-registry.openshift-image-registry.svc:5000/tekton-pipelines/buildah:latest
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       script: |
         #!/usr/bin/env sh
         set -e
         buildah bud -t $(params.IMAGE) .
+
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -31,7 +40,14 @@ spec:
   steps:
     - name: clone
       image: alpine/git
-      workingDir: /workspace/repo  # specify the workspace directory
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       script: |
         #!/bin/sh
         git clone $(params.url) .
